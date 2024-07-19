@@ -3,7 +3,9 @@ const bcrypt = require("bcrypt")
 const {UserModel,validuser,validLogin,getToken} = require("../model/userModel")
 const router = express.Router();
 const {authToken}= require("../auth/authToken")
+const {monkeyUpload} = require("../util/uploadFile")
 const jwt = require("jsonwebtoken");
+const { required } = require("joi");
 
 router.get("/",async(req,res) => {
     let data = await UserModel.find({});
@@ -60,5 +62,22 @@ router.post("/login", async(req,res) =>{
     res.json({token:newToken});
  
 })
+
+router.post("/upload",authToken, async (req, res) => {
+  
+
+    try{
+      let data = await monkeyUpload(req,"myFile","/users"+req.tokenData._id,5,[".jpg",".png"]);
+       if(data.fileName){
+        let updatedata = await UserModel.updateOne({_id:req.tokenData._id},{img_url:data.fileName})
+         res.json(updatedata);
+       }
+   
+    }
+    catch(err){
+      console.log(err);
+      res.status(400).json(err);
+    }
+  })
 
    module.exports = router;

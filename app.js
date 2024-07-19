@@ -5,6 +5,9 @@ const path = require("path")
 //משתנה שיש לו יכולות להפעיל שרת
 const http = require("http");
 const {routesInit} = require("./routes/config_route")
+
+const fileUpload = require("express-fileupload");
+
 //יצרנו משתנה שיש לו את היכולת של האקספרס כולל האזנה לראוט
 const app = express();
 
@@ -12,8 +15,14 @@ const cors = require("cors");
 
 
 
+
+
 //הגדרת פירסור מידע כגייסון
 app.use(express.json());
+
+app.use(fileUpload({
+    limits: { fileSize: 1024 * 1024 * 5}
+  }))
 
 app.use(express.static(path.join(__dirname,"public")));
 
